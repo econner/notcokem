@@ -1,5 +1,5 @@
 # Django settings for nocoke project.
-import getpass
+import platform
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -10,8 +10,7 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
-local_users = ["eric"]
-if getpass.getuser() in local_users:
+if platform.node() != 'ip-10-117-50-59':
     DEV = True
 else:
     DEV = False
