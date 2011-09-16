@@ -1,5 +1,5 @@
 from django.http import HttpResponse
-from monitor.models import Keg, Pour, Pulse
+from nocoke.monitor.models import Keg, Pour, Pulse
 import datetime
 
 def index(request):

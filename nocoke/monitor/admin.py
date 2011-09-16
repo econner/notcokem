@@ -1,4 +1,4 @@
-from monitor.models import Keg, Pour, Pulse
+from nocoke.monitor.models import Keg, Pour, Pulse
 from django.contrib import admin
 
 admin.site.register(Keg)
