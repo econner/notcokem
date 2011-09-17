@@ -28,4 +28,6 @@ def flow(request):
     
     cur_pulse = Pulse(frequency=freq, pour=cur_pour)
     cur_pulse.save()
+    
+    return HttpResponse("")
         
