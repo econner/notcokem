@@ -12,7 +12,7 @@ def flow(request):
     freq = request.GET['freq']
     cur_keg = Keg.objects.current_keg()
     
-    pour_threshold = datetime.datetime.now() - datetime.timedelta(seconds=2)
+    pour_threshold = datetime.datetime.now() - datetime.timedelta(seconds=5)
     pulses = Pulse.objects.filter(created_at__gt=pour_threshold).order_by("-created_at")
     if pulses:
         prev_pulse = pulses[0]
