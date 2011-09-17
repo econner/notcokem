@@ -1,5 +1,6 @@
 from django.conf.urls.defaults import patterns, include, url
-
+from django.conf import settings
+import os
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
 admin.autodiscover()
@@ -16,3 +17,10 @@ urlpatterns = patterns('nocoke.monitor.views',
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
 )
+
+# static content served only in debug
+if settings.DEBUG:
+    urlpatterns += patterns('',
+        (r'^(?P<path>.*)$', 'django.views.static.serve',
+         {'document_root': os.path.dirname(settings.PROJECT_ROOT)}),
+    )

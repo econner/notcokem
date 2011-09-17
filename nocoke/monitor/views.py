@@ -1,9 +1,10 @@
 from django.http import HttpResponse
+from django.shortcuts import render_to_response
 from nocoke.monitor.models import Keg, Pour, Pulse
 import datetime
 
 def index(request):
-    return HttpResponse("Hello World")
+    return render_to_response("index.html")
     
 def flow(request):
     """
