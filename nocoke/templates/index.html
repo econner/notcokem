@@ -25,7 +25,7 @@
 	#meter {
 		background: url(/media/images/meter.png);
 		width: 279px;
-		height: 179px;
+		height: 276px;
 		position: relative;
 		margin: 0 auto;
 	}
@@ -36,7 +36,7 @@
 	    position: absolute;
 	}
 	#needle-container {
-		-moz-transform: rotate(-70deg);
+		-moz-transform: rotate(-50deg);
 	    height: 60px;
 	    left: 105px;
 	    position: absolute;
@@ -44,38 +44,59 @@
 	    top: 120px;
 	    width: 63px;
 	}
+	#percent-full {
+		color: #26ADE4;
+		position: absolute;
+		bottom: 56px;
+		left: 75px;
+	}
+	#total-pours {
+		color: #26ADE4;
+		position: absolute;
+		bottom: 56px;
+		left: 160px;
+	}
+	.gauge-large {
+		font-size: 20px;
+		font-weight: bold;
+	}
+	.gauge-small {
+		font-size: 10px;
+		margin-top: -6px;
+	}
 	</style>
 	<script>
-	function Meter(options) {
-		var that = {}; // closure to return
+function Meter(options) {
+	var that = {}; // closure to return
+	
+	EMPTY_ROTATION = -50
+	FULL_ROTATION = 50
+	
+	var needle = $("#needle-container");
+	
+	that.render = function(pctFull) {
+		totalDist = FULL_ROTATION - EMPTY_ROTATION;
+		rotationToAdd = (pctFull / 100) * totalDist;
 		
-		EMPTY_ROTATION = -70
-		FULL_ROTATION = 70
+		needle.css("text-indent", rotationToAdd);
+		needle.animate({  textIndent: 0 }, {
+		    step: function(now,fx) {
+			console.info(now);
+		      $(this).css('-moz-transform','rotate('+(EMPTY_ROTATION + (rotationToAdd - now))+'deg)');
+			  $(this).css('-webkit-transform','rotate('+(EMPTY_ROTATION + (rotationToAdd - now))+'deg)');
+		    },
+		    duration:'slow'
+		},'linear');
 		
-		var needle = $("#needle-container");
-		
-		that.render = function(pctFull) {
-			totalDist = FULL_ROTATION - EMPTY_ROTATION;
-			rotationToAdd = (pctFull / 100) * totalDist;
-			
-			needle.css("text-indent", rotationToAdd);
-			needle.animate({  textIndent: 0 }, {
-			    step: function(now,fx) {
-				console.info(now);
-			      $(this).css('-moz-transform','rotate('+(EMPTY_ROTATION + (rotationToAdd - now))+'deg)');
-				  $(this).css('-webkit-transform','rotate('+(EMPTY_ROTATION + (rotationToAdd - now))+'deg)');
-			    },
-			    duration:'slow'
-			},'linear');
-			
-		}
-		
-		return that;
 	}
-	$(document).ready(function() {
-		var kegMeter = Meter();
-		kegMeter.render(25);
-	});
+	
+	return that;
+}
+$(document).ready(function() {
+	var kegMeter = Meter();
+	
+	kegMeter.render(50);
+});
 	
 	</script>
   </head>
@@ -97,9 +118,15 @@
 					<div id="needle-container">
 						<img src="/media/images/needle.png" id="needle" />
 					</div>
+					<div id="percent-full">
+						<div class='gauge-large'>66%</div>
+						<div class='gauge-small'>remaining</div>
+					</div>
+					<div id="total-pours">
+						<div class='gauge-large'>135</div>
+						<div class='gauge-small'>poured</div>
+					</div>
 				</div>
-				<h3>44 oz poured</h3>
-				<h3>100 oz to pour</h3>
 			</div>
 			<div class="span-8" style="margin-right:0; text-align: center">
 				<h2 class="subheader">Recent Pours</h2>
