@@ -1,3 +1,4 @@
+{% load monitor_tags %}
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
    "http://www.w3.org/TR/html4/strict.dtd">
 
@@ -6,8 +7,9 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>The Not Coke Machine</title>
 
-    <!-- Framework CSS -->
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
 
+    <!-- Framework CSS -->
     <link rel="stylesheet" href="/media/css/reset.css" type="text/css" media="screen, projection">
 	<link rel="stylesheet" href="/media/css/grid.css" type="text/css" media="screen, projection">
 	<link href='http://fonts.googleapis.com/css?family=Changa+One|Love+Ya+Like+A+Sister' rel='stylesheet' type='text/css'>
@@ -20,7 +22,62 @@
 	h2.subheader {
 		font-family: 'Love Ya Like A Sister', cursive; color: #444
 	}
+	#meter {
+		background: url(/media/images/meter.png);
+		width: 279px;
+		height: 179px;
+		position: relative;
+		margin: 0 auto;
+	}
+	#needle {
+	    bottom: 59px;
+	    display: block;
+	    left: 25px;
+	    position: absolute;
+	}
+	#needle-container {
+		-moz-transform: rotate(-70deg);
+	    height: 60px;
+	    left: 105px;
+	    position: absolute;
+	    text-indent: 70px;
+	    top: 120px;
+	    width: 63px;
+	}
 	</style>
+	<script>
+	function Meter(options) {
+		var that = {}; // closure to return
+		
+		EMPTY_ROTATION = -70
+		FULL_ROTATION = 70
+		
+		var needle = $("#needle-container");
+		
+		that.render = function(pctFull) {
+			totalDist = FULL_ROTATION - EMPTY_ROTATION;
+			rotationToAdd = (pctFull / 100) * totalDist;
+			
+			needle.css("text-indent", rotationToAdd);
+			needle.animate({  textIndent: 0 }, {
+			    step: function(now,fx) {
+				console.info(now);
+			      $(this).css('-moz-transform','rotate('+(EMPTY_ROTATION + (rotationToAdd - now))+'deg)');
+				  $(this).css('-webkit-transform','rotate('+(EMPTY_ROTATION + (rotationToAdd - now))+'deg)');
+			    },
+			    duration:'slow'
+			},'linear');
+			
+		}
+		
+		return that;
+	}
+	$(document).ready(function() {
+		var kegMeter = Meter();
+		kegMeter.render(25);
+	});
+	
+	</script>
   </head>
   <body>
     <div class="container">
@@ -28,6 +85,28 @@
 			<img src="/media/images/keg.png" alt="keg" style="height:150px"/>
 	    	<h1 class="header">The Not Coke Machine</h1>
 			<span style="font-size: 1.2em">It's like Facebook...for your dog.</span>
+		</div>
+		<div style="margin-top:10px">
+			<div class="span-8" style="text-align: center">
+				<h2 class="subheader">Currently Not Coke</h2>
+				<img src="/media/images/heineken-10275.jpg" style="width: 250px;"/>
+			</div>
+			<div class="span-8" style="text-align: center">
+				<h2 class="subheader">Keg Meter</h2>
+				<div id="meter">
+					<div id="needle-container">
+						<img src="/media/images/needle.png" id="needle" />
+					</div>
+				</div>
+				<h3>44 oz poured</h3>
+				<h3>100 oz to pour</h3>
+			</div>
+			<div class="span-8" style="margin-right:0; text-align: center">
+				<h2 class="subheader">Recent Pours</h2>
+				{% for pour in recent_pours %}
+				<h3>{{ pour.size|floatformat }} oz {% format_time pour.created_at %}</h3>
+				{% endfor %}
+			</div>
 		</div>
     </div>
   </body>

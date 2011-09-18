@@ -1,10 +1,20 @@
 from django.http import HttpResponse
+from django.template import RequestContext
 from django.shortcuts import render_to_response
 from nocoke.monitor.models import Keg, Pour, Pulse
 import datetime
 
 def index(request):
-    return render_to_response("index.html")
+    cur_keg = Keg.objects.current_keg()
+    recent_pours = Pour.objects.filter(keg=cur_keg).order_by("-created_at")
+    print recent_pours
+    return render_to_response(
+        "index.html",
+        { 
+            "recent_pours": recent_pours,
+        },
+        context_instance = RequestContext(request)
+    )
     
 def flow(request):
     """
