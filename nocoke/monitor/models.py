@@ -28,7 +28,7 @@ class Pour(models.Model):
     size = models.FloatField(default=0)
     
     def __unicode__(self):
-        return "%doz out of %s at %s" % (self.size, self.keg, self.created_at) 
+        return "%.2foz out of %s at %s" % (self.size, self.keg, self.created_at) 
     
 class Pulse(models.Model):
     frequency = models.IntegerField(default=0) 

@@ -8,7 +8,10 @@ def index(request):
     
 def flow(request):
     """
-    Handle post request from Arduino to add a new pulse.
+    Handle post request from Arduino to add a new pulse.  We first check
+    if any pulses have occurred in the last 5 seconds.  If so, then we assume
+    that this pulse belongs to the previous pour and coalesce it into that
+    pour.  Otherwise, we assume it is part of a new pour.
     """
     freq = request.GET['freq']
     cur_keg = Keg.objects.current_keg()
