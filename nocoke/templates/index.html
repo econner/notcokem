@@ -56,6 +56,9 @@
 		bottom: 56px;
 		left: 160px;
 	}
+	#messages {
+		text-align: center;
+	}
 	.gauge-large {
 		font-size: 20px;
 		font-weight: bold;
@@ -103,6 +106,61 @@ $(document).ready(function() {
 });
 	
 	</script>
+	
+	
+	<script src="/media/js/orbited/Orbited.js"></script>
+	<script src="/media/js/stomp/stomp.js"></script>
+	
+	<script type="text/javascript" charset="utf-8">
+	    // set the orbited settings and port
+
+		    Orbited.settings.port = 9000;
+		    //Orbited.settings.hostname = "localhost";
+		    TCPSocket = Orbited.TCPSocket;
+		    document.domain = document.domain;
+			
+			
+		    $(document).ready(function() {
+		        stomp = new STOMPClient();
+		
+				var pourTimeout;
+				
+		        stomp.onopen = function(){
+		            //console.log("opening stomp client");
+		        };
+		        stomp.onclose = function(c){
+		            //alert('Lost Connection, Code: ' + c);
+		        };
+		        stomp.onerror = function(error){
+		            alert("Error: " + error);
+		        };
+		        stomp.onerrorframe = function(frame){
+		            alert("Error: " + frame.body);
+		        };
+		        stomp.onconnectedframe = function() {
+		            console.log("Connected. Subscribing");
+		            //alert("subscribing");
+		            
+		            stomp.subscribe("/pours");
+		        };
+		        stomp.onmessageframe = function(frame){
+		            // Presumably we should only receive message frames with the
+		            // destination "/topic/message" because that's the only destination
+		            // to which we've subscribed. To handle multiple destinations we
+		            // would have to check frame.headers.destination
+					var curPour = $.parseJSON(frame.body);
+					$("#messages").html("<h1>Pouring..." + curPour.size + "</h1>")
+					
+					// clear the previous timeout..we are still pouring
+					clearTimeout(pourTimeout);
+					pourTimeout = setTimeout(function() { 
+						$("#messages").html(""); 
+					}, 3000)
+		        };
+		        stomp.connect('localhost', 61613);
+		    });
+	</script>
+
   </head>
   <body>
     <div class="container">
@@ -111,6 +169,7 @@ $(document).ready(function() {
 	    	<h1 class="header">The Not Coke Machine</h1>
 			<span style="font-size: 1.2em">It's like Facebook...for your dog.</span>
 		</div>
+		<div id="messages"></div>
 		<div style="margin-top:10px">
 			<div class="span-8" style="text-align: center">
 				<h2 class="subheader">Currently Not Coke</h2>

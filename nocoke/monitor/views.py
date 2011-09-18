@@ -5,6 +5,15 @@ from nocoke.monitor.models import Keg, Pour, Pulse
 from django.db.models import Sum
 import datetime
 
+# realtime 
+import json
+import stomp
+
+conn = stomp.Connection()
+conn.start()
+conn.connect()
+conn.subscribe(destination='/pours', ack='auto')
+
 def index(request):
     cur_keg = Keg.objects.current_keg()
     recent_pours = Pour.objects.filter(keg=cur_keg).order_by("-created_at")
@@ -51,6 +60,9 @@ def flow(request):
     
     cur_pulse = Pulse(frequency=freq, pour=cur_pour)
     cur_pulse.save()
+    
+    pourjson = json.dumps({'pk': cur_pour.pk, 'size': cur_pour.size})
+    conn.send(pourjson, destination='/pours')
     
     return HttpResponse("Nothing to see here")
         
