@@ -2,16 +2,25 @@ from django.http import HttpResponse
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 from nocoke.monitor.models import Keg, Pour, Pulse
+from django.db.models import Sum
 import datetime
 
 def index(request):
     cur_keg = Keg.objects.current_keg()
     recent_pours = Pour.objects.filter(keg=cur_keg).order_by("-created_at")
-    print recent_pours
+    
+    total_oz_poured = recent_pours.aggregate(Sum('size'))
+    percent_remaining = (cur_keg.size - total_oz_poured['size__sum']) / cur_keg.size
+    percent_remaining *= 100
+    
+    num_pours = len(recent_pours)
+    
     return render_to_response(
         "index.html",
         { 
             "recent_pours": recent_pours,
+            "percent_remaining": percent_remaining,
+            "num_pours": num_pours,
         },
         context_instance = RequestContext(request)
     )

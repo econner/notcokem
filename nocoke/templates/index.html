@@ -73,8 +73,10 @@ function Meter(options) {
 	FULL_ROTATION = 50
 	
 	var needle = $("#needle-container");
+	var percentDisp = $("#percent-text");
+	var poursDisp = $("#pours-text");
 	
-	that.render = function(pctFull) {
+	that.render = function(pctFull, numPours) {
 		totalDist = FULL_ROTATION - EMPTY_ROTATION;
 		rotationToAdd = (pctFull / 100) * totalDist;
 		
@@ -88,6 +90,8 @@ function Meter(options) {
 		    duration:'slow'
 		},'linear');
 		
+		percentDisp.html(pctFull + "%");
+		poursDisp.html(numPours);
 	}
 	
 	return that;
@@ -95,7 +99,7 @@ function Meter(options) {
 $(document).ready(function() {
 	var kegMeter = Meter();
 	
-	kegMeter.render(50);
+	kegMeter.render({{ percent_remaining|floatformat }}, {{ num_pours }});
 });
 	
 	</script>
@@ -119,11 +123,11 @@ $(document).ready(function() {
 						<img src="/media/images/needle.png" id="needle" />
 					</div>
 					<div id="percent-full">
-						<div class='gauge-large'>66%</div>
+						<div id='percent-text' class='gauge-large'></div>
 						<div class='gauge-small'>remaining</div>
 					</div>
 					<div id="total-pours">
-						<div class='gauge-large'>135</div>
+						<div id='pours-text' class='gauge-large'></div>
 						<div class='gauge-small'>poured</div>
 					</div>
 				</div>
