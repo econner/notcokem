@@ -16,9 +16,10 @@ conn.subscribe(destination='/pours', ack='auto')
 
 def index(request):
     cur_keg = Keg.objects.current_keg()
-    recent_pours = Pour.objects.filter(keg=cur_keg).order_by("-created_at")
+    recent_pours = Pour.objects.filter(keg=cur_keg, size__gt=1).order_by("-created_at")
     
     total_oz_poured = recent_pours.aggregate(Sum('size'))
+    print total_oz_poured
     percent_remaining = (cur_keg.size - total_oz_poured['size__sum']) / cur_keg.size
     percent_remaining *= 100
     
