@@ -10,7 +10,6 @@ ADMINS = (
 )
 
 PROJECT_ROOT = os.path.dirname(os.path.realpath(__file__))
-print os.path.dirname(PROJECT_ROOT)
 MANAGERS = ADMINS
 
 if platform.node() != 'ip-10-117-50-59':
